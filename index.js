@@ -7,7 +7,7 @@ const db = mysql.createConnection(
   {
     host: 'localhost',
     user: 'root',
-    password: '',
+    password: 'root',
     database: 'employees_db',
   },
   console.log(`Connected to the employees_db.`)
@@ -22,7 +22,7 @@ function start() {
       type: 'list',
       message: 'Are you adding or viewing employees?',
       choices: [
-        'View all employess',
+        'View all employees',
         'Add an employee',
         'Update an employee',
         'View all roles',
@@ -34,83 +34,24 @@ function start() {
     })
     .then(function (selection) {
       console.log(selection);
-      if (select.office === 'View All Employees') {
+      if (selection.office === 'View all employees') {
         showAllEmployees();
-      } else if (select.office === 'Add Employee') {
+      } else if (selection.office === 'Add an employee') {
         addEmployee();
-      } else if (select.office === 'Update Employee Role') {
+      } else if (selection.office === 'Update an employee') {
         updateRole();
-      } else if (select.office === 'View all roles') {
+      } else if (selection.office === 'View all roles') {
         allRoles();
-      } else if (select.office === 'Add Role') {
+      } else if (selection.office === 'Add a role') {
         addRole();
-      } else if (select.office === 'View All Departments') {
+      } else if (selection.office === 'View all departments') {
         viewAllDepartments();
-      } else if (select.office === 'Add Department') {
+      } else if (selection.office === 'Add a department') {
         addDepartment();
       } else {
         quit();
       }
     });
-}
-
-//function to view employees that is invoked upon selection of that choice
-
-function addEmployee() {
-  const sql = 'SELECT * FROM roles';
-  db.query(sql, (err, result) => {
-    if (err) console.log(err);
-    result = result.map((role) => {
-      return {
-        name: role.title,
-        value: role.id,
-      };
-    });
-    inquirer
-      .prompt([
-        {
-          name: 'first_name',
-          type: 'input',
-          message: 'What is your first name?',
-        },
-        {
-          name: 'last_name',
-          type: 'input',
-          message: 'What is your last name?',
-        },
-        {
-          name: 'role_id',
-          type: 'list',
-          message: 'role id?',
-          choices: result,
-        },
-        {
-          name: 'manager_id',
-          type: 'list',
-          message: 'select a manager id...',
-          choices: [1, 3, 5, 7],
-        },
-      ])
-      .then((data) => {
-        db.query(
-          'INSERT INTO employee SET ?',
-          {
-            first_name: data.first_name,
-            last_name: data.last_name,
-            role_id: data.role_id,
-            manager_id: data.manager_id,
-          },
-          (err) => {
-            if (err) {
-              console.log(err);
-              console.log('Employee has not been added\n');
-            }
-            console.log('Employee has now been added\n');
-            start();
-          }
-        );
-      });
-  });
 }
 
 //function to add an employee
@@ -247,7 +188,7 @@ function allRoles() {
     }
     console.log('View roles\n');
     console.table(rows);
-    choices();
+    start();
   });
 }
 
@@ -308,12 +249,14 @@ function addRole() {
 // function to view the departments
 
 function viewAllDepartments() {
+  console.log('THIS FUNCTION IS RETURNING WHAT I WANT');
   const sql = `SELECT id, department_name title FROM department`;
 
   db.query(sql, (err, rows) => {
     if (err) {
       console.log({ error: err.message });
     }
+    console.log('View Departments\n');
     console.table(rows);
     start();
   });
