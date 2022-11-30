@@ -1,6 +1,5 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
-const consoleTable = require('console.table');
 
 // create connectin to database
 const db = mysql.createConnection(
@@ -33,7 +32,6 @@ function start() {
       ],
     })
     .then(function (selection) {
-      console.log(selection);
       if (selection.office === 'View all employees') {
         showAllEmployees();
       } else if (selection.office === 'Add an employee') {
@@ -52,6 +50,28 @@ function start() {
         quit();
       }
     });
+}
+
+//function to view all employees
+
+function showAllEmployees() {
+  const sql = `SELECT employee.id,employee.first_name, employee.last_name, roles.title, department.department_name, roles.salary, employee.manager_id,
+  CONCAT(manager.first_name,' ',manager.last_name) AS manager
+  FROM employee
+  LEFT JOIN roles
+  ON employee.role_id=roles.id
+  LEFT JOIN department
+  ON roles.department_id=department.id
+  LEFT JOIN employee manager 
+  ON manager.id =employee.manager_id`;
+  db.query(sql, (err, rows) => {
+    if (err) {
+      console.log(err);
+    }
+    console.log('Employees viewed!');
+    console.table(rows);
+    start();
+  });
 }
 
 //function to add an employee
