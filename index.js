@@ -6,6 +6,7 @@ const db = mysql.createConnection(
   {
     host: 'localhost',
     user: 'root',
+    //add your own password
     password: 'root',
     database: 'employees_db',
   },
@@ -17,7 +18,7 @@ const db = mysql.createConnection(
 function start() {
   inquirer
     .prompt({
-      name: 'office',
+      name: 'system',
       type: 'list',
       message: 'Are you adding or viewing employees?',
       choices: [
@@ -28,26 +29,26 @@ function start() {
         'Add a role',
         'View all departments',
         'Add a department',
-        'Quit',
+        'Exit',
       ],
     })
     .then(function (selection) {
-      if (selection.office === 'View all employees') {
+      if (selection.system === 'View all employees') {
         showAllEmployees();
-      } else if (selection.office === 'Add an employee') {
+      } else if (selection.system === 'Add an employee') {
         addEmployee();
-      } else if (selection.office === 'Update an employee') {
+      } else if (selection.system === 'Update an employee') {
         updateRole();
-      } else if (selection.office === 'View all roles') {
+      } else if (selection.system === 'View all roles') {
         allRoles();
-      } else if (selection.office === 'Add a role') {
+      } else if (selection.system === 'Add a role') {
         addRole();
-      } else if (selection.office === 'View all departments') {
+      } else if (selection.system === 'View all departments') {
         viewAllDepartments();
-      } else if (selection.office === 'Add a department') {
+      } else if (selection.system === 'Add a department') {
         addDepartment();
       } else {
-        quit();
+        Exit();
       }
     });
 }
@@ -55,6 +56,7 @@ function start() {
 //function to view all employees
 
 function showAllEmployees() {
+  // const sql = `SELECT * from employee`;
   const sql = `SELECT employee.id,employee.first_name, employee.last_name, roles.title, department.department_name, roles.salary, employee.manager_id,
   CONCAT(manager.first_name,' ',manager.last_name) AS manager
   FROM employee
@@ -62,7 +64,7 @@ function showAllEmployees() {
   ON employee.role_id=roles.id
   LEFT JOIN department
   ON roles.department_id=department.id
-  LEFT JOIN employee manager 
+  LEFT JOIN employee manager
   ON manager.id =employee.manager_id`;
   db.query(sql, (err, rows) => {
     if (err) {
@@ -313,7 +315,7 @@ function addDepartment() {
     });
 }
 
-function quit() {
+function Exit() {
   process.exit();
 }
 
